@@ -1,170 +1,387 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Petit bout de Martin 💖</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              float: "float 4s ease-in-out infinite",
-              pulseSlow: "pulseSlow 3s ease-in-out infinite",
-              fadeIn: "fadeIn 0.5s forwards",
-              fadeOut: "fadeOut 0.5s forwards"
+  <meta charset="UTF-8">
+  <title>Petit bout de Martin 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Anime.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            float: "float 4s ease-in-out infinite",
+            pulseSlow: "pulseSlow 3s ease-in-out infinite",
+            fadeIn: "fadeIn 0.5s forwards",
+            fadeOut: "fadeOut 0.5s forwards",
+            heartbeatSlow: "heartbeatSlow 3s ease-in-out infinite",
+          },
+          keyframes: {
+            float: {
+              "0%": { transform: "translateY(0)" },
+              "50%": { transform: "translateY(-10px)" },
+              "100%": { transform: "translateY(0)" },
             },
-            keyframes: {
-              float: {
-                "0%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-10px)" },
-                "100%": { transform: "translateY(0)" },
-              },
-              pulseSlow: {
-                "0%, 100%": { transform: "scale(1)" },
-                "50%": { transform: "scale(1.15)" },
-              },
-              fadeIn: {
-                from: { opacity: "0", transform: "translateY(-10px)" },
-                to: { opacity: "1", transform: "translateY(0)" },
-              },
-              fadeOut: {
-                from: { opacity: "1", transform: "translateY(0)" },
-                to: { opacity: "0", transform: "translateY(-10px)" },
-              },
+            pulseSlow: {
+              "0%, 100%": { transform: "scale(1)" },
+              "50%": { transform: "scale(1.15)" },
             },
+            fadeIn: {
+              from: { opacity: "0", transform: "translateY(-10px)" },
+              to: { opacity: "1", transform: "translateY(0)" },
+            },
+            fadeOut: {
+              from: { opacity: "1", transform: "translateY(0)" },
+              to: { opacity: "0", transform: "translateY(-10px)" },
+            },
+            heartbeatSlow: {
+              "0%": { transform: "scale(1)" },
+              "25%": { transform: "scale(1.05)" },
+              "50%": { transform: "scale(1)" },
+              "75%": { transform: "scale(1.05)" },
+              "100%": { transform: "scale(1)" },
+            }
           },
         },
-      };
-    </script>
-    <style>
-        body {
-            transition: background 1s ease, color 0.5s ease;
-        }
-
-        /* Dégradés pour différentes heures */
-        .morning-bg { background: linear-gradient(120deg, #FFDEE9, #B5FFFC); }
-        .afternoon-bg { background: linear-gradient(120deg, #FBD786, #f7797d); }
-        .evening-bg { background: linear-gradient(120deg, #a18cd1, #fbc2eb); }
-        .night-bg {
-            background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
-            color: #d1d5db;
-        }
-
-        .night-bg::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: url('https://cdn.pixabay.com/photo/2017/08/30/11/05/star-2694891_1280.png') repeat;
-            background-size: 200px;
-            animation: moveStars 50s linear infinite;
-            opacity: 0.15;
-            pointer-events: none;
-        }
-
-        @keyframes moveStars {
-            from { background-position: 0 0; }
-            to { background-position: 1000px 1000px; }
-        }
-    </style>
+      },
+    };
+  </script>
+  <style>
+    body {
+      transition: background 1s ease, color 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Dégradés selon l'heure */
+    .morning-bg { background: linear-gradient(120deg, #FFDEE9, #B5FFFC); }
+    .afternoon-bg { background: linear-gradient(120deg, #FBD786, #f7797d); }
+    .evening-bg { background: linear-gradient(120deg, #a18cd1, #fbc2eb); }
+    .night-bg {
+      background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
+      color: #d1d5db;
+    }
+    /* Adaptation du texte et des backgrounds en mode nuit */
+    .night-bg #comfort-message,
+    .night-bg #daily-message,
+    .night-bg #status,
+    .night-bg #datetime,
+    .night-bg #brain-indicator span {
+      color: #d1d5db !important;
+    }
+    .night-bg #comfort-message,
+    .night-bg #daily-message,
+    .night-bg #brain-indicator {
+      background-color: rgba(0, 0, 0, 0.7) !important;
+    }
+    /* Fond stylisé pour le titre et la boîte */
+    .title-bg {
+      background: linear-gradient(90deg, #fbc2eb, #a6c1ee);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    /* Conteneur de pluie d'étoiles */
+    #star-rain {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+      display: none; /* S'affiche uniquement si heure >= 21 */
+    }
+    /* Les étoiles seront créées dynamiquement en tant que spans avec l'emoji "✨" */
+    .star {
+      position: absolute;
+      opacity: 0;
+      top: 0%; /* Apparition dès le haut */
+    }
+    /* Style pour la boîte indice "pssst" */
+    #hint-text {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body class="flex flex-col justify-center items-center min-h-screen relative overflow-hidden p-4">
+  <!-- Conteneur de pluie d'étoiles -->
+  <div id="star-rain"></div>
 
-<!-- 🌸 Titre mignon -->
-<h1 class="text-2xl sm:text-3xl font-bold text-black-500 mb-4 text-center">
-    ✨ Un petit bout de Martin pour toi, Claire 💖
-</h1>
+  <!-- Titre avec fond stylisé -->
+  <h1 class="title-bg text-2xl sm:text-3xl font-bold text-black mb-2 text-center relative z-10">
+    ✨ Un petit bout de Martin ✨
+  </h1>
 
-<div class="flex flex-col items-center relative z-10 w-full max-w-md">
+  <!-- Indicateur "Cerveau en fonctionnement" -->
+  <div id="brain-indicator" class="flex items-center mb-4 bg-white bg-opacity-80 px-2 py-1 rounded relative z-10">
+    <span class="w-3 h-3 bg-yellow-500 rounded-full animate-ping"></span>
+    <span class="ml-2 text-sm text-gray-700">Cerveau en fonctionnement</span>
+  </div>
+
+  <!-- Boîte pour le Message du jour -->
+  <div id="daily-message" class="mb-4 text-center text-md bg-white bg-opacity-80 px-4 py-2 rounded shadow relative z-10">
+    <strong>Message du jour</strong><br>
+    Chargement du message quotidien...
+  </div>
+
+  <div class="flex flex-col items-center relative z-10 w-full max-w-md">
     <!-- Icône de statut -->
     <div id="status-icon" class="text-3xl mb-2 animate-pulseSlow">🕒</div>
 
-    <!-- Avatar flottant -->
+    <!-- Avatar avec explosion d'emoji au clic -->
     <div class="relative flex justify-center items-center w-32 h-32 sm:w-40 sm:h-40">
-        <img id="avatar" src="{{ url_for('static', filename='images/avatar.png') }}"
-             alt="Avatar de Martin"
-             class="w-full h-full rounded-full border-4 border-pink-300 shadow-lg cursor-pointer animate-float animate-pulseSlow">
+      <img id="avatar" src="{{ url_for('static', filename='images/avatar.png') }}"
+           alt="Avatar de Martin"
+           class="w-full h-full rounded-full border-4 border-pink-300 shadow-lg cursor-pointer animate-float animate-pulseSlow">
     </div>
 
-    <!-- Statut textuel -->
-    <div id="status" class="text-base sm:text-lg font-semibold text-gray-700 mt-4 text-center">
-        Chargement du statut...
+    <!-- Statut -->
+    <div id="status" class="text-base sm:text-lg font-semibold text-black mt-4 text-center">
+      Chargement du statut...
     </div>
 
     <!-- Date et heure -->
     <div id="datetime" class="text-gray-500 text-sm mt-2 text-center"></div>
 
-    <!-- Bulle de message -->
-    <div id="message-bubble"
-         class="hidden bg-white text-rose-600 px-4 py-2 rounded-2xl shadow-lg text-center w-full max-w-xs mt-4 text-sm sm:text-base">
+    <!-- Boîte stylisée avec le message personnalisé -->
+    <div id="reason-box" class="title-bg text-black inline-block whitespace-nowrap mb-4 relative z-10">
+      ✨ pourquoi ce connard ne répond pas ✨
     </div>
-</div>
 
-<script>
-    const body = document.body;
+    <!-- Zone pour le message de réconfort -->
+    <div id="comfort-message" class="mt-4 bg-white bg-opacity-80 text-rose-600 px-4 py-2 rounded-2xl shadow-lg text-center w-full max-w-xs text-sm sm:text-base">
+      Chargement du message...
+    </div>
+
+    <!-- Bouton interactif "Essaye moi" -->
+    <button id="send-smile" class="mt-6 bg-rose-500 hover:bg-rose-600 text-white px-6 py-2 rounded-full shadow-md focus:outline-none">
+      Essaye moi
+    </button>
+
+    <!-- Animation de cœur pour "Essaye moi" -->
+    <div id="heart-animation" class="mt-4 opacity-0">
+      <span class="text-4xl">❤️</span>
+    </div>
+
+    <!-- Boîte indice sous le cœur -->
+    <div id="hint-text" class="mt-2 text-sm text-gray-700 hidden relative z-10">
+      psssst : clique sur ma tête pour voir
+    </div>
+  </div>
+
+  <script>
+    // Références aux éléments
     const statusDiv = document.getElementById('status');
     const statusIcon = document.getElementById('status-icon');
-    const bubble = document.getElementById('message-bubble');
     const datetimeDiv = document.getElementById('datetime');
+    const comfortMessageDiv = document.getElementById('comfort-message');
+    const dailyMessageDiv = document.getElementById('daily-message');
+    const sendSmileBtn = document.getElementById('send-smile');
+    const heartAnimation = document.getElementById('heart-animation');
+    const avatar = document.getElementById('avatar');
+    const starRain = document.getElementById('star-rain');
+    const hintText = document.getElementById('hint-text');
 
     const statusIcons = {
-        "dort": "💤", "réveille": "☕", "musique": "🎶", "pause": "🍽️",
-        "montage": "🎥", "code": "💻", "écrit": "✍️", "détend": "🌙", "default": "🕒"
+      "dort": "💤", "réveille": "☕", "musique": "🎶", "pause": "🍽️",
+      "montage": "🎥", "code": "💻", "écrit": "✍️", "détend": "🌙", "default": "🕒"
     };
 
+    const comfortMessages = [
+      "Chaque jour, je pense à toi. 💖",
+      "Même loin, mon cœur bat pour toi. 💓",
+      "Tu es mon rayon de soleil, même à distance. ☀️",
+      "Rappelle-toi, je suis toujours là, peu importe l'heure. 🌟",
+      "Un petit sourire pour illuminer ta journée. 😊"
+    ];
+
+    const dailyMessages = [
+      "Aujourd'hui, n'oublie pas que tu es aimée. 🌸",
+      "Un jour nouveau, une pensée pour toi. 🌼",
+      "Ta présence illumine ma journée, même à distance. ✨",
+      "Chaque moment sans toi me rappelle combien tu comptes. 💕",
+      "Reste forte, je suis toujours là pour toi. 🌟"
+    ];
+
     function setStatusIcon(statusText) {
-        const keyword = Object.keys(statusIcons).find(word => statusText.includes(word));
-        statusIcon.textContent = statusIcons[keyword] || statusIcons["default"];
-    }
-
-    function updateBackground() {
-        const hour = new Date().getHours();
-        body.classList.remove("morning-bg", "afternoon-bg", "evening-bg", "night-bg");
-
-        if (hour >= 6 && hour < 12) body.classList.add("morning-bg");
-        else if (hour >= 12 && hour < 18) body.classList.add("afternoon-bg");
-        else if (hour >= 18 && hour < 21) body.classList.add("evening-bg");
-        else body.classList.add("night-bg");
+      const keyword = Object.keys(statusIcons).find(word => statusText.includes(word));
+      statusIcon.textContent = statusIcons[keyword] || statusIcons["default"];
     }
 
     function updateDateTime() {
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const formattedDate = now.toLocaleDateString('fr-FR', options);
-        const formattedTime = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        datetimeDiv.textContent = `${formattedDate} - ${formattedTime}`;
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      datetimeDiv.textContent = `${now.toLocaleDateString('fr-FR', options)} - ${now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
     }
 
-    function fetchStatusAndMessage() {
-        fetch('/get_status_and_message')
-            .then(response => response.json())
-            .then(data => {
-                statusDiv.textContent = data.status;
-                setStatusIcon(data.status);
-
-                bubble.textContent = data.message;
-                bubble.classList.remove('hidden', 'animate-fadeOut');
-                bubble.classList.add('animate-fadeIn');
-
-                setTimeout(() => {
-                    bubble.classList.remove('animate-fadeIn');
-                    bubble.classList.add('animate-fadeOut');
-                }, 10000); // Affiche 10 secondes
-            });
+    function fetchStatus() {
+      fetch('/get_status')
+        .then(response => response.json())
+        .then(data => {
+          statusDiv.textContent = data.status;
+          setStatusIcon(data.status);
+        });
     }
 
-    // Actualisations
+    function fetchComfortMessage() {
+      fetch('/get_status_and_message')
+        .then(response => response.json())
+        .then(data => {
+          comfortMessageDiv.textContent = data.message;
+          comfortMessageDiv.classList.remove('animate-fadeOut');
+          comfortMessageDiv.classList.add('animate-fadeIn');
+          setTimeout(() => {
+            comfortMessageDiv.classList.remove('animate-fadeIn');
+            comfortMessageDiv.classList.add('animate-fadeOut');
+          }, 15000);
+        });
+    }
+
+    // Mise à jour du message du jour (reste affiché)
+    function updateDailyMessage() {
+      const index = new Date().getDate() % dailyMessages.length;
+      dailyMessageDiv.innerHTML = `<strong>Message du jour</strong><br>${dailyMessages[index]}`;
+      dailyMessageDiv.classList.remove('animate-fadeOut');
+      dailyMessageDiv.classList.add('animate-fadeIn');
+    }
+
+    // Met à jour le fond et gère la pluie d'étoiles
+    function updateBackground() {
+      const now = new Date();
+      const hour = now.getHours();
+      const body = document.body;
+      body.classList.remove('morning-bg', 'afternoon-bg', 'evening-bg', 'night-bg');
+      if (hour >= 6 && hour < 12) {
+        body.classList.add('morning-bg');
+      } else if (hour >= 12 && hour < 18) {
+        body.classList.add('afternoon-bg');
+      } else if (hour >= 18 && hour < 21) {
+        body.classList.add('evening-bg');
+      } else {
+        body.classList.add('night-bg');
+      }
+      updateStarRain(hour);
+    }
+
+    // Affiche la pluie d'étoiles uniquement à partir de 21h
+    function updateStarRain(hour) {
+      if (hour >= 21) {
+        starRain.style.display = "block";
+        startStarRain();
+      } else {
+        starRain.style.display = "none";
+        anime.remove('.star');
+      }
+    }
+
+    // Génère des étoiles emoji "✨" aléatoires et les anime avec anime.js
+    function startStarRain() {
+      starRain.innerHTML = '';
+      const starCount = 50; // Augmentation du nombre d'étoiles
+      for (let i = 0; i < starCount; i++) {
+        const starEl = document.createElement('span');
+        starEl.classList.add('star');
+        starEl.style.left = Math.random() * 100 + '%';
+        starEl.style.fontSize = (Math.random() * 10 + 10) + 'px';
+        starEl.innerText = '✨';
+        starRain.appendChild(starEl);
+      }
+      anime({
+        targets: '.star',
+        top: ['0%', '110%'],
+        opacity: [0, 1, 0],
+        duration: 1500, // Durée réduite pour un effet plus dynamique
+        delay: anime.stagger(50, { start: 0 }),
+        easing: 'linear',
+        loop: true
+      });
+    }
+
+    // Animation du cœur sur le clic du bouton "Essaye moi"
+    sendSmileBtn.addEventListener('click', () => {
+      heartAnimation.classList.remove('opacity-0');
+      heartAnimation.classList.add('animate-fadeIn');
+      setTimeout(() => {
+        heartAnimation.classList.remove('animate-fadeIn');
+        heartAnimation.classList.add('animate-fadeOut');
+        setTimeout(() => {
+          heartAnimation.classList.remove('animate-fadeOut');
+          heartAnimation.classList.add('opacity-0');
+        }, 500);
+      }, 2000);
+
+      // Affiche le texte d'indice dans une boîte sous le cœur
+      hintText.classList.remove('hidden');
+      anime({
+        targets: hintText,
+        opacity: [0, 1],
+        duration: 500,
+        easing: 'linear'
+      });
+      setTimeout(() => {
+        anime({
+          targets: hintText,
+          opacity: [1, 0],
+          duration: 500,
+          easing: 'linear',
+          complete: function() {
+            hintText.classList.add('hidden');
+          }
+        });
+      }, 2500);
+    });
+
+    // Explosion d'emoji sur le clic de l'avatar avec anime.js
+    avatar.addEventListener('click', () => {
+      const rect = avatar.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const emojis = ["❤️", "✨", "😊", "💖", "🌟"];
+      const count = 20;
+      for (let i = 0; i < count; i++) {
+        const emojiEl = document.createElement('span');
+        emojiEl.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emojiEl.style.position = 'fixed';
+        emojiEl.style.left = centerX + 'px';
+        emojiEl.style.top = centerY + 'px';
+        emojiEl.style.fontSize = '28px';
+        emojiEl.style.opacity = 1;
+        document.body.appendChild(emojiEl);
+        anime({
+          targets: emojiEl,
+          translateX: () => anime.random(-200, 200),
+          translateY: () => anime.random(-200, 200),
+          scale: [1, anime.random(2, 3)],
+          opacity: [1, 0],
+          duration: 1200,
+          easing: 'easeOutExpo',
+          complete: function() {
+            emojiEl.remove();
+          }
+        });
+      }
+    });
+
     window.onload = () => {
-        updateBackground();
-        updateDateTime();
-        fetchStatusAndMessage();
-        setInterval(updateBackground, 60000);  // Fond toutes les minutes
-        setInterval(updateDateTime, 1000);     // Heure chaque seconde
-        setInterval(fetchStatusAndMessage, 20000);  // Messages toutes les 20 secondes
-    };
-</script>
+      updateDateTime();
+      fetchStatus();
+      fetchComfortMessage();
+      updateDailyMessage();
+      updateBackground();
 
+      setInterval(updateDateTime, 1000);
+      setInterval(fetchStatus, 20000);
+      setInterval(fetchComfortMessage, 20000);
+      setInterval(updateDailyMessage, 86400000);
+      setInterval(updateBackground, 60000);
+    };
+  </script>
 </body>
 </html>
