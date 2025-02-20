@@ -50,8 +50,18 @@
     };
   </script>
   <style>
+    /* Réinitialisation et sécurité pour mobile */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      box-sizing: border-box;
+      width: 100vw;
+    }
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
     body {
-      transition: background 1s ease, color 0.5s ease;
       position: relative;
       overflow: hidden;
     }
@@ -63,7 +73,7 @@
       background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
       color: #d1d5db;
     }
-    /* Adaptation du texte et des backgrounds en mode nuit */
+    /* Adaptation en mode nuit */
     .night-bg #comfort-message,
     .night-bg #daily-message,
     .night-bg #status,
@@ -76,14 +86,14 @@
     .night-bg #brain-indicator {
       background-color: rgba(0, 0, 0, 0.7) !important;
     }
-    /* Fond stylisé pour le titre et la boîte */
+    /* Style commun pour le titre et les boîtes stylisées */
     .title-bg {
       background: linear-gradient(90deg, #fbc2eb, #a6c1ee);
       padding: 10px 20px;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
-    /* Conteneur de pluie d'étoiles */
+    /* Conteneur de la pluie d'étoiles */
     #star-rain {
       position: absolute;
       top: 0;
@@ -93,13 +103,12 @@
       pointer-events: none;
       overflow: hidden;
       z-index: 0;
-      display: none; /* S'affiche uniquement si heure >= 21 */
+      display: none;
     }
-    /* Les étoiles seront créées dynamiquement en tant que spans avec l'emoji "✨" */
     .star {
       position: absolute;
       opacity: 0;
-      top: 0%; /* Apparition dès le haut */
+      top: 0%;
     }
     /* Style pour la boîte indice "pssst" */
     #hint-text {
@@ -107,10 +116,8 @@
       padding: 4px 8px;
       border-radius: 6px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      white-space: normal;
       text-align: center;
-      /* Pour s'assurer que le texte s'adapte sur mobile */
-      width: 100%;
+      width: 90%;
       max-width: 300px;
     }
   </style>
@@ -131,7 +138,7 @@
   </div>
 
   <!-- Boîte pour le Message du jour -->
-  <div id="daily-message" class="mb-4 text-center text-md bg-white bg-opacity-80 px-4 py-2 rounded shadow relative z-10">
+  <div id="daily-message" class="mb-4 text-center text-md bg-white bg-opacity-80 px-4 py-2 rounded shadow relative z-10 w-full max-w-md">
     <strong>Message du jour</strong><br>
     Chargement du message quotidien...
   </div>
