@@ -107,6 +107,11 @@
       padding: 4px 8px;
       border-radius: 6px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      white-space: normal;
+      text-align: center;
+      /* Pour s'assurer que le texte s'adapte sur mobile */
+      width: 100%;
+      max-width: 300px;
     }
   </style>
 </head>
@@ -284,7 +289,7 @@
     // Génère des étoiles emoji "✨" aléatoires et les anime avec anime.js
     function startStarRain() {
       starRain.innerHTML = '';
-      const starCount = 50; // Augmentation du nombre d'étoiles
+      const starCount = 50;
       for (let i = 0; i < starCount; i++) {
         const starEl = document.createElement('span');
         starEl.classList.add('star');
@@ -297,7 +302,7 @@
         targets: '.star',
         top: ['0%', '110%'],
         opacity: [0, 1, 0],
-        duration: 1500, // Durée réduite pour un effet plus dynamique
+        duration: 1500,
         delay: anime.stagger(50, { start: 0 }),
         easing: 'linear',
         loop: true
