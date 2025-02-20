@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Petit bout de Martin 💖</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -17,12 +18,12 @@
             keyframes: {
               float: {
                 "0%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-15px)" },
+                "50%": { transform: "translateY(-10px)" },
                 "100%": { transform: "translateY(0)" },
               },
               pulseSlow: {
                 "0%, 100%": { transform: "scale(1)" },
-                "50%": { transform: "scale(1.2)" },
+                "50%": { transform: "scale(1.15)" },
               },
               fadeIn: {
                 from: { opacity: "0", transform: "translateY(-10px)" },
@@ -43,35 +44,23 @@
         }
 
         /* Dégradés pour différentes heures */
-        .morning-bg {
-            background: linear-gradient(120deg, #FFDEE9, #B5FFFC);
-        }
-
-        .afternoon-bg {
-            background: linear-gradient(120deg, #FBD786, #f7797d);
-        }
-
-        .evening-bg {
-            background: linear-gradient(120deg, #a18cd1, #fbc2eb);
-        }
-
+        .morning-bg { background: linear-gradient(120deg, #FFDEE9, #B5FFFC); }
+        .afternoon-bg { background: linear-gradient(120deg, #FBD786, #f7797d); }
+        .evening-bg { background: linear-gradient(120deg, #a18cd1, #fbc2eb); }
         .night-bg {
             background: linear-gradient(120deg, #0f2027, #203a43, #2c5364);
-            color: #d1d5db; /* Texte plus lisible la nuit */
+            color: #d1d5db;
         }
 
-        /* Animation d'étoiles en mode nuit */
         .night-bg::before {
             content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: url('https://cdn.pixabay.com/photo/2017/08/30/11/05/star-2694891_1280.png') repeat;
             background-size: 200px;
             animation: moveStars 50s linear infinite;
-            opacity: 0.2;
+            opacity: 0.15;
             pointer-events: none;
         }
 
@@ -81,30 +70,35 @@
         }
     </style>
 </head>
-<body class="flex justify-center items-center h-screen relative overflow-hidden">
+<body class="flex flex-col justify-center items-center min-h-screen relative overflow-hidden p-4">
 
-<div class="flex flex-col items-center relative z-10">
+<!-- 🌸 Titre mignon -->
+<h1 class="text-2xl sm:text-3xl font-bold text-black-500 mb-4 text-center">
+    ✨ Un petit bout de Martin pour toi, Claire 💖
+</h1>
+
+<div class="flex flex-col items-center relative z-10 w-full max-w-md">
     <!-- Icône de statut -->
-    <div id="status-icon" class="text-4xl mb-2 animate-pulseSlow">🕒</div>
+    <div id="status-icon" class="text-3xl mb-2 animate-pulseSlow">🕒</div>
 
     <!-- Avatar flottant -->
-    <div class="relative flex justify-center items-center">
+    <div class="relative flex justify-center items-center w-32 h-32 sm:w-40 sm:h-40">
         <img id="avatar" src="{{ url_for('static', filename='images/avatar.png') }}"
              alt="Avatar de Martin"
-             class="w-32 h-32 rounded-full border-4 border-pink-300 shadow-lg cursor-pointer animate-float animate-pulseSlow">
+             class="w-full h-full rounded-full border-4 border-pink-300 shadow-lg cursor-pointer animate-float animate-pulseSlow">
     </div>
 
     <!-- Statut textuel -->
-    <div id="status" class="text-lg font-semibold text-gray-700 mt-4">
+    <div id="status" class="text-base sm:text-lg font-semibold text-gray-700 mt-4 text-center">
         Chargement du statut...
     </div>
 
     <!-- Date et heure -->
-    <div id="datetime" class="text-gray-500 text-sm mt-2"></div>
+    <div id="datetime" class="text-gray-500 text-sm mt-2 text-center"></div>
 
     <!-- Bulle de message -->
     <div id="message-bubble"
-         class="hidden bg-white text-rose-600 px-4 py-2 rounded-2xl shadow-lg text-center w-72 mt-4">
+         class="hidden bg-white text-rose-600 px-4 py-2 rounded-2xl shadow-lg text-center w-full max-w-xs mt-4 text-sm sm:text-base">
     </div>
 </div>
 
@@ -116,15 +110,8 @@
     const datetimeDiv = document.getElementById('datetime');
 
     const statusIcons = {
-        "dort": "💤",
-        "réveille": "☕",
-        "musique": "🎶",
-        "pause": "🍽️",
-        "montage": "🎥",
-        "code": "💻",
-        "écrit": "✍️",
-        "détend": "🌙",
-        "default": "🕒"
+        "dort": "💤", "réveille": "☕", "musique": "🎶", "pause": "🍽️",
+        "montage": "🎥", "code": "💻", "écrit": "✍️", "détend": "🌙", "default": "🕒"
     };
 
     function setStatusIcon(statusText) {
@@ -136,15 +123,10 @@
         const hour = new Date().getHours();
         body.classList.remove("morning-bg", "afternoon-bg", "evening-bg", "night-bg");
 
-        if (hour >= 6 && hour < 12) {
-            body.classList.add("morning-bg"); // Matin
-        } else if (hour >= 12 && hour < 18) {
-            body.classList.add("afternoon-bg"); // Après-midi
-        } else if (hour >= 18 && hour < 21) {
-            body.classList.add("evening-bg"); // Soirée
-        } else {
-            body.classList.add("night-bg"); // Mode nuit
-        }
+        if (hour >= 6 && hour < 12) body.classList.add("morning-bg");
+        else if (hour >= 12 && hour < 18) body.classList.add("afternoon-bg");
+        else if (hour >= 18 && hour < 21) body.classList.add("evening-bg");
+        else body.classList.add("night-bg");
     }
 
     function updateDateTime() {
@@ -169,18 +151,18 @@
                 setTimeout(() => {
                     bubble.classList.remove('animate-fadeIn');
                     bubble.classList.add('animate-fadeOut');
-                }, 10000); // Message affiché pendant 10 secondes
+                }, 10000); // Affiche 10 secondes
             });
     }
 
-    // Actualisations régulières
+    // Actualisations
     window.onload = () => {
         updateBackground();
         updateDateTime();
         fetchStatusAndMessage();
-        setInterval(updateBackground, 60000);  // Actualise le fond toutes les minutes
-        setInterval(updateDateTime, 1000);     // Actualise la date/heure chaque seconde
-        setInterval(fetchStatusAndMessage, 20000);  // Change de message toutes les 20 secondes
+        setInterval(updateBackground, 60000);  // Fond toutes les minutes
+        setInterval(updateDateTime, 1000);     // Heure chaque seconde
+        setInterval(fetchStatusAndMessage, 20000);  // Messages toutes les 20 secondes
     };
 </script>
 
